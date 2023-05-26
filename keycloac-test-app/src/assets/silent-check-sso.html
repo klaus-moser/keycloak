@@ -1,0 +1,13 @@
+<!-- 
+To ensure that Keycloak can communicate through the iframe 
+you will have to serve a static HTML asset from your 
+application at the location provided in silentCheckSsoRedirectUri.
+ -->
+ 
+<html>
+  <body>
+    <script>
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>
