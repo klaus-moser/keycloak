@@ -44,3 +44,7 @@ ng serve --open
 #### Keycloak
 
 npm install keycloak-angular keycloak-js
+
+
+#### PostGres
+docker pull ubuntu/postgres
