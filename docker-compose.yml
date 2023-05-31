@@ -3,8 +3,44 @@ version: '2'
 services:
   keycloak:
     image: quay.io/keycloak/keycloak
+    command: start-dev
     environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=password
+        KC_DB: postgres
+        KC_DB_URL_HOST: x-postgres_keycloak_demo
+        KC_DB_URL_DATABASE: keycloak
+        KC_DB_USERNAME: ${KC_DB_USERNAME}
+        KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+        KC_DB_SCHEMA: public
+        KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+        KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - 8080:8080
+    depends_on:
+      x-postgres_keycloak_demo:
+        condition: service_healthy
+    networks:
+      - keycloak_demo_dev_network
+
+  x-postgres_keycloak_demo:
+      image: ubuntu/postgres
+      command: postgres -c 'max_connections=10'
+      volumes:
+        - pgdata_keycloak_demo:/var/lib/postgresql/data
+      environment:
+          POSTGRES_DB: keycloak
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      healthcheck:
+          test: "exit 0"
+      ports:
+        - "5436:5432"
+      networks:
+        - keycloak_demo_dev_network
+
+volumes:
+  pgdata_keycloak_demo:
+
+networks:
+  keycloak_demo_dev_network:
+    driver: bridge
+
